@@ -1,4 +1,6 @@
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,7 +12,7 @@ public class Main extends JFrame implements ColorModelListener
     private ColorModelPanel LUV;
     private ColorModelPanel XYZ;
 
-    // CIE RGB E
+    // CIE RGB E xyz=(1/3,1/3,1/3) XYZ(100,100,100)
     private double[][] RGBtoXYZ = {
             {0.4887180, 0.3106803, 0.2006017},
             {0.1762044, 0.8129847, 0.0108109},
@@ -164,16 +166,26 @@ public class Main extends JFrame implements ColorModelListener
 
             }
         };
-        LUV = new ColorModelPanel(this, 0, 255, new String[]{"L", "u\'", "v\'"})
+        LUV = new ColorModelPanel(this, 0, 100, 0, 70, 0, 60, new String[]{"L", "u\'", "v\'"})
         {
             @Override
             double[] getXYZ() {
-                return new double[0];
+                double L = slider1.getValue() / 100.;
+                double u = slider2.getValue() / 100.;
+                double v = slider3.getValue() / 100.;
+
+
+                double x = (L * 9 * u) / (4 * v);
+                double z = L * (12 - 3 * u - 20 * v) / (4 * v);
+                return new double[]{x, L, z};
+
             }
 
             @Override
             void setColorFromXYZ(double[] XYZ) {
-
+                slider1.setValue((int) (XYZ[1] * 100));
+                slider2.setValue((int) (100 * 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2])));
+                slider3.setValue((int) (100 * 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2])));
             }
         };
 
