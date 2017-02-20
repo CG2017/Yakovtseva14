@@ -43,88 +43,84 @@ public class Main extends JFrame implements ColorModelListener
         RGB = new ColorModelPanel(this, 0, 255, new String[]{"R", "G", "B"})
         {
             @Override
-            double[] getXYZ() {
+            double[] getRGB() {
                 int R = slider1.getValue();
                 int G = slider2.getValue();
                 int B = slider3.getValue();
                 double r = R / 255.;
                 double g = G / 255.;
                 double b = B / 255.;
-                return matrixToVector(RGBtoXYZ, new double[]{r, g, b});
+                return new double[]{r, g, b};
             }
 
             @Override
-            void setColorFromXYZ(double[] XYZ) {
-                double[] rgb = matrixToVector(XYZtoRGB, XYZ);
-//                System.out.printf("RGB: %f %f %f\n", rgb[0], rgb[1], rgb[2]);
-                if (rgb[0] + eps < 0 || rgb[0] > 1 + eps) {
+            void setColorFromRGB(double[] RGB) {
+                if (RGB[0] + eps < 0 || RGB[0] > 255 +  eps) {
                     icon1.setEnabled(true);
                 }
                 else {
                     icon1.setEnabled(false);
                 }
-                if (rgb[1] + eps < 0 || rgb[1] > 1 + eps) {
+                if (RGB[1] + eps < 0 || RGB[1] > 255 +  eps) {
                     icon2.setEnabled(true);
                 }
                 else {
                     icon2.setEnabled(false);
                 }
-                if (rgb[2] + eps < 0 || rgb[2] > 1 + eps) {
+                if (RGB[2] + eps < 0 || RGB[2] > 255 +  eps) {
                     icon3.setEnabled(true);
                 }
                 else {
                     icon3.setEnabled(false);
                 }
-                slider1.setValue((int) (rgb[0] * 255.));
-                slider2.setValue((int) (rgb[1] * 255.));
-                slider3.setValue((int) (rgb[2] * 255.));
+                slider1.setValue((int) Math.round(RGB[0] * 255.));
+                slider2.setValue((int) Math.round(RGB[1] * 255.));
+                slider3.setValue((int) Math.round(RGB[2] * 255.));
 
             }
         };
         CMY = new ColorModelPanel(this, 0, 255, new String[]{"C", "M", "Y"})
         {
             @Override
-            double[] getXYZ() {
+            double[] getRGB() {
                 int R = 255 - slider1.getValue();
                 int G = 255 - slider2.getValue();
                 int B = 255 - slider3.getValue();
                 double r = R / 255.;
                 double g = G / 255.;
                 double b = B / 255.;
-                return matrixToVector(RGBtoXYZ, new double[]{r, g, b});
+                return new double[]{r, g, b};
             }
 
             @Override
-            void setColorFromXYZ(double[] XYZ) {
-                double[] rgb = matrixToVector(XYZtoRGB, XYZ);
-//                System.out.printf("CMY: %f %f %f\n", 1 - rgb[0], 1 - rgb[1], 1 - rgb[2]);
-                if (rgb[0] + eps < 0 || rgb[0] > 1 + eps) {
+            void setColorFromRGB(double[] RGB) {
+                if (RGB[0] + eps < 0 || RGB[0] > 255 +  eps) {
                     icon1.setEnabled(true);
                 }
                 else {
                     icon1.setEnabled(false);
                 }
-                if (rgb[1] + eps < 0 || rgb[1] > 1 + eps) {
+                if (RGB[1] + eps < 0 || RGB[1] > 255 +  eps) {
                     icon2.setEnabled(true);
                 }
                 else {
                     icon2.setEnabled(false);
                 }
-                if (rgb[2] + eps < 0 || rgb[2] > 1 + eps) {
+                if (RGB[2] + eps < 0 || RGB[2] > 255 +  eps) {
                     icon3.setEnabled(true);
                 }
                 else {
                     icon3.setEnabled(false);
                 }
-                slider1.setValue((int) ((1 - rgb[0]) * 255.));
-                slider2.setValue((int) ((1 - rgb[1]) * 255.));
-                slider3.setValue((int) ((1 - rgb[2]) * 255.));
+                slider1.setValue(255 - (int) Math.round(RGB[0] * 255.));
+                slider2.setValue(255 - (int) Math.round(RGB[1] * 255.));
+                slider3.setValue(255 - (int) Math.round(RGB[2] * 255.));
             }
         };
         HSV = new ColorModelPanel(this, 0, 360, 0, 100, 0, 100, new String[]{"H", "S", "V"})
         {
             @Override
-            double[] getXYZ() {
+            double[] getRGB() {
                 double s = slider2.getValue() / 100.;
                 double v = slider3.getValue() / 100.;
                 double c = v * s;
@@ -165,19 +161,18 @@ public class Main extends JFrame implements ColorModelListener
                 rgb[0] += m;
                 rgb[1] += m;
                 rgb[2] += m;
-                return matrixToVector(RGBtoXYZ, rgb);
+                return rgb;
             }
 
             @Override
-            void setColorFromXYZ(double[] XYZ) {
-                double[] rgb = matrixToVector(XYZtoRGB, XYZ);
+            void setColorFromRGB(double[] rgb) {
                 double M = Math.max(rgb[0], Math.max(rgb[1], rgb[2]));
                 double m = Math.min(rgb[0], Math.min(rgb[1], rgb[2]));
                 double C = M - m;
                 double H = 60;
                 double S;
                 if (C == 0) {
-                    H *= 0;
+                    H = 0;
                 }
                 else if (rgb[0] == M) {
                     H *= ((rgb[1] - rgb[2]) / M) % 6;
@@ -215,16 +210,16 @@ public class Main extends JFrame implements ColorModelListener
                 else {
                     icon3.setEnabled(false);
                 }
-                slider1.setValue((int) H);
-                slider2.setValue((int) (S * 100.));
-                slider3.setValue((int) (M * 100.));
+                slider1.setValue((int) Math.round(H));
+                slider2.setValue((int) Math.round(S * 100.));
+                slider3.setValue((int) Math.round(M * 100.));
 
             }
         };
         LUV = new ColorModelPanel(this, 0, 100, 0, 70, 0, 60, new String[]{"L", "u\'", "v\'"})
         {
             @Override
-            double[] getXYZ() {
+            double[] getRGB() {
                 double L = slider1.getValue() / 100.;
                 double u = slider2.getValue() / 100.;
                 double v = slider3.getValue() / 100.;
@@ -232,12 +227,15 @@ public class Main extends JFrame implements ColorModelListener
 
                 double x = (L * 9 * u) / (4 * v);
                 double z = L * (12 - 3 * u - 20 * v) / (4 * v);
-                return new double[]{x, L, z};
+                double[] xyz = new double[]{x, L, z};
+                return matrixToVector(XYZtoRGB, xyz);
 
             }
 
             @Override
-            void setColorFromXYZ(double[] XYZ) {
+            void setColorFromRGB(double[] RGB) {
+
+                double[] XYZ = matrixToVector(RGBtoXYZ, RGB);
                 double L = XYZ[1] * 100;
                 double u = 100 * 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
                 double v = 100 * 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
@@ -261,28 +259,30 @@ public class Main extends JFrame implements ColorModelListener
                 else {
                     icon3.setEnabled(false);
                 }
-                slider1.setValue((int) L);
-                slider2.setValue((int) u);
-                slider3.setValue((int) v);
+                slider1.setValue((int) Math.round(L));
+                slider2.setValue((int) Math.round(u));
+                slider3.setValue((int) Math.round(v));
             }
         };
 
         XYZ = new ColorModelPanel(this, 0, 100, new String[]{"X", "Y", "Z"})
         {
             @Override
-            double[] getXYZ() {
-                return new double[]{
+            double[] getRGB() {
+                double []xyz = new double[]{
                         slider1.getValue() / 100.,
                         slider2.getValue() / 100.,
                         slider3.getValue() / 100.
                 };
+                return matrixToVector(XYZtoRGB, xyz);
             }
 
             @Override
-            void setColorFromXYZ(double[] XYZ) {
-                slider1.setValue((int) (XYZ[0] * 100.));
-                slider2.setValue((int) (XYZ[1] * 100.));
-                slider3.setValue((int) (XYZ[2] * 100.));
+            void setColorFromRGB(double[] RGB) {
+                double []XYZ = matrixToVector(RGBtoXYZ, RGB);
+                slider1.setValue((int) Math.round(XYZ[0] * 100.));
+                slider2.setValue((int) Math.round(XYZ[1] * 100.));
+                slider3.setValue((int) Math.round(XYZ[2] * 100.));
             }
         };
 
@@ -321,39 +321,39 @@ public class Main extends JFrame implements ColorModelListener
     }
 
     @Override
-    public void colorChanged(double[] xyz, ColorModelPanel origin) {
+    public void colorChanged(double[] RGB, ColorModelPanel origin) {
         if (origin != null) {
             origin.disableIcons();
         }
 
-        RGB.notifyListener = false;
+        this.RGB.notifyListener = false;
         CMY.notifyListener = false;
         HSV.notifyListener = false;
         LUV.notifyListener = false;
         XYZ.notifyListener = false;
 
-        if (RGB != origin) {
-            RGB.setColorFromXYZ(xyz);
+        if (this.RGB != origin) {
+            this.RGB.setColorFromRGB(RGB);
         }
         if (CMY != origin) {
-            CMY.setColorFromXYZ(xyz);
+            CMY.setColorFromRGB(RGB);
         }
         if (HSV != origin) {
-            HSV.setColorFromXYZ(xyz);
+            HSV.setColorFromRGB(RGB);
         }
         if (LUV != origin) {
-            LUV.setColorFromXYZ(xyz);
+            LUV.setColorFromRGB(RGB);
         }
         if (XYZ != origin) {
-            XYZ.setColorFromXYZ(xyz);
+            XYZ.setColorFromRGB(RGB);
         }
-        RGB.notifyListener = true;
+        this.RGB.notifyListener = true;
         CMY.notifyListener = true;
         HSV.notifyListener = true;
         LUV.notifyListener = true;
         XYZ.notifyListener = true;
         getContentPane().setBackground(
-                new Color(RGB.slider1.getValue(), RGB.slider2.getValue(), RGB.slider3.getValue()));
+                new Color(this.RGB.slider1.getValue(), this.RGB.slider2.getValue(), this.RGB.slider3.getValue()));
 
     }
 }

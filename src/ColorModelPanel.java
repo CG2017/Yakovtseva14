@@ -1,12 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 abstract class ColorModelPanel extends JPanel
 {
-    JSlider slider1;
-    JSlider slider2;
-    JSlider slider3;
+    public JSlider slider1;
+    public JSlider slider2;
+    public JSlider slider3;
     boolean notifyListener;
 
     JLabel icon1;
@@ -76,38 +75,38 @@ abstract class ColorModelPanel extends JPanel
         spinner1.addChangeListener(e -> {
             slider1.setValue((Integer) spinner1.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
         spinner2.addChangeListener(e -> {
             slider2.setValue((Integer) spinner2.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
         spinner3.addChangeListener(e -> {
             slider3.setValue((Integer) spinner3.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
 
         slider1.addChangeListener(e -> {
             spinner1.setValue(slider1.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
         slider2.addChangeListener(e -> {
             spinner2.setValue(slider2.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
         slider3.addChangeListener(e -> {
             spinner3.setValue(slider3.getValue());
             if (notifyListener) {
-                listener.colorChanged(getXYZ(), this);
+                listener.colorChanged(getRGB(), this);
             }
         });
 
@@ -125,7 +124,7 @@ abstract class ColorModelPanel extends JPanel
         icon3.setEnabled(false);
     }
 
-    abstract double[] getXYZ();
+    abstract double[] getRGB();
 
-    abstract void setColorFromXYZ(double[] XYZ);
+    abstract void setColorFromRGB(double[] RGB);
 }
