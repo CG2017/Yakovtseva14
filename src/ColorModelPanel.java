@@ -3,9 +3,9 @@ import java.awt.*;
 
 abstract class ColorModelPanel extends JPanel
 {
-    public JSlider slider1;
-    public JSlider slider2;
-    public JSlider slider3;
+    JSlider slider1;
+    JSlider slider2;
+    JSlider slider3;
     boolean notifyListener;
 
     JLabel icon1;

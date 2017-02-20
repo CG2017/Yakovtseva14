@@ -36,7 +36,7 @@ public class Main extends JFrame implements ColorModelListener
         return res;
     }
 
-    Main() {
+    private Main() {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Color Models");
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
