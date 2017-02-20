@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 abstract class ColorModelPanel extends JPanel
 {
@@ -8,6 +9,10 @@ abstract class ColorModelPanel extends JPanel
     JSlider slider3;
     boolean notifyListener;
 
+    JLabel icon1;
+    JLabel icon2;
+    JLabel icon3;
+
     private JSpinner spinner1;
     private JSpinner spinner2;
     private JSpinner spinner3;
@@ -15,7 +20,7 @@ abstract class ColorModelPanel extends JPanel
     ColorModelPanel(ColorModelListener listener, int min1, int max1, int min2, int max2, int min3, int max3,
                     String[] name) {
 
-        Dimension size = new Dimension(300, 150);
+        Dimension size = new Dimension(500, 200);
         setSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -26,12 +31,20 @@ abstract class ColorModelPanel extends JPanel
         JLabel label3 = new JLabel(name[2]);
 
         spinner1 = new JSpinner(new SpinnerNumberModel(min1, min1, max1, 1));
-        spinner2 = new JSpinner(new SpinnerNumberModel(min2, min2, max3, 1));
+        spinner2 = new JSpinner(new SpinnerNumberModel(min2, min2, max2, 1));
         spinner3 = new JSpinner(new SpinnerNumberModel(min3, min3, max3, 1));
 
         slider1 = new JSlider(min1, max1, min1);
         slider2 = new JSlider(min3, max2, min2);
         slider3 = new JSlider(min3, max2, min3);
+
+
+        icon1 = new JLabel(UIManager.getIcon("OptionPane.warningIcon"));
+        icon2 = new JLabel(UIManager.getIcon("OptionPane.warningIcon"));
+        icon3 = new JLabel(UIManager.getIcon("OptionPane.warningIcon"));
+        icon1.setEnabled(false);
+        icon2.setEnabled(false);
+        icon3.setEnabled(false);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(label0);
@@ -41,6 +54,7 @@ abstract class ColorModelPanel extends JPanel
         foo.add(label1);
         foo.add(spinner1);
         foo.add(slider1);
+        foo.add(icon1);
         add(foo);
 
         JPanel bar = new JPanel();
@@ -48,6 +62,7 @@ abstract class ColorModelPanel extends JPanel
         bar.add(label2);
         bar.add(spinner2);
         bar.add(slider2);
+        bar.add(icon2);
         add(bar);
 
         JPanel lala = new JPanel();
@@ -55,6 +70,7 @@ abstract class ColorModelPanel extends JPanel
         lala.add(label3);
         lala.add(spinner3);
         lala.add(slider3);
+        lala.add(icon3);
         add(lala);
 
         spinner1.addChangeListener(e -> {
@@ -101,6 +117,12 @@ abstract class ColorModelPanel extends JPanel
 
     ColorModelPanel(ColorModelListener listener, int min, int max, String[] name) {
         this(listener, min, max, min, max, min, max, name);
+    }
+
+    void disableIcons(){
+        icon1.setEnabled(false);
+        icon2.setEnabled(false);
+        icon3.setEnabled(false);
     }
 
     abstract double[] getXYZ();

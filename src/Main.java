@@ -1,6 +1,3 @@
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +8,8 @@ public class Main extends JFrame implements ColorModelListener
     private ColorModelPanel HSV;
     private ColorModelPanel LUV;
     private ColorModelPanel XYZ;
+
+    private double eps = 1e-2;
 
     // CIE RGB E xyz=(1/3,1/3,1/3) XYZ(100,100,100)
     private double[][] RGBtoXYZ = {
@@ -57,6 +56,25 @@ public class Main extends JFrame implements ColorModelListener
             @Override
             void setColorFromXYZ(double[] XYZ) {
                 double[] rgb = matrixToVector(XYZtoRGB, XYZ);
+//                System.out.printf("RGB: %f %f %f\n", rgb[0], rgb[1], rgb[2]);
+                if (rgb[0] + eps < 0 || rgb[0] > 1 + eps) {
+                    icon1.setEnabled(true);
+                }
+                else {
+                    icon1.setEnabled(false);
+                }
+                if (rgb[1] + eps < 0 || rgb[1] > 1 + eps) {
+                    icon2.setEnabled(true);
+                }
+                else {
+                    icon2.setEnabled(false);
+                }
+                if (rgb[2] + eps < 0 || rgb[2] > 1 + eps) {
+                    icon3.setEnabled(true);
+                }
+                else {
+                    icon3.setEnabled(false);
+                }
                 slider1.setValue((int) (rgb[0] * 255.));
                 slider2.setValue((int) (rgb[1] * 255.));
                 slider3.setValue((int) (rgb[2] * 255.));
@@ -79,6 +97,25 @@ public class Main extends JFrame implements ColorModelListener
             @Override
             void setColorFromXYZ(double[] XYZ) {
                 double[] rgb = matrixToVector(XYZtoRGB, XYZ);
+//                System.out.printf("CMY: %f %f %f\n", 1 - rgb[0], 1 - rgb[1], 1 - rgb[2]);
+                if (rgb[0] + eps < 0 || rgb[0] > 1 + eps) {
+                    icon1.setEnabled(true);
+                }
+                else {
+                    icon1.setEnabled(false);
+                }
+                if (rgb[1] + eps < 0 || rgb[1] > 1 + eps) {
+                    icon2.setEnabled(true);
+                }
+                else {
+                    icon2.setEnabled(false);
+                }
+                if (rgb[2] + eps < 0 || rgb[2] > 1 + eps) {
+                    icon3.setEnabled(true);
+                }
+                else {
+                    icon3.setEnabled(false);
+                }
                 slider1.setValue((int) ((1 - rgb[0]) * 255.));
                 slider2.setValue((int) ((1 - rgb[1]) * 255.));
                 slider3.setValue((int) ((1 - rgb[2]) * 255.));
@@ -139,7 +176,6 @@ public class Main extends JFrame implements ColorModelListener
                 double C = M - m;
                 double H = 60;
                 double S;
-                double V;
                 if (C == 0) {
                     H *= 0;
                 }
@@ -160,6 +196,25 @@ public class Main extends JFrame implements ColorModelListener
                     S = C / M;
                 }
 
+//                System.out.printf("HSV: %f %f %f\n", H, S, M);
+                if (H + eps < 0 || H > 360 + eps) {
+                    icon1.setEnabled(true);
+                }
+                else {
+                    icon1.setEnabled(false);
+                }
+                if (S + eps < 0 || S > 1 + eps) {
+                    icon2.setEnabled(true);
+                }
+                else {
+                    icon2.setEnabled(false);
+                }
+                if (M + eps < 0 || M > 1 + eps) {
+                    icon3.setEnabled(true);
+                }
+                else {
+                    icon3.setEnabled(false);
+                }
                 slider1.setValue((int) H);
                 slider2.setValue((int) (S * 100.));
                 slider3.setValue((int) (M * 100.));
@@ -183,9 +238,32 @@ public class Main extends JFrame implements ColorModelListener
 
             @Override
             void setColorFromXYZ(double[] XYZ) {
-                slider1.setValue((int) (XYZ[1] * 100));
-                slider2.setValue((int) (100 * 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2])));
-                slider3.setValue((int) (100 * 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2])));
+                double L = XYZ[1] * 100;
+                double u = 100 * 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
+                double v = 100 * 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
+
+//                System.out.printf("LUV: %f %f %f\n", L, u, v);
+                if (L + eps < 0 || L > 100 + eps) {
+                    icon1.setEnabled(true);
+                }
+                else {
+                    icon1.setEnabled(false);
+                }
+                if (u + eps < 0 || u > 70 + eps) {
+                    icon2.setEnabled(true);
+                }
+                else {
+                    icon2.setEnabled(false);
+                }
+                if (v + eps < 0 || v > 60 + eps) {
+                    icon3.setEnabled(true);
+                }
+                else {
+                    icon3.setEnabled(false);
+                }
+                slider1.setValue((int) L);
+                slider2.setValue((int) u);
+                slider3.setValue((int) v);
             }
         };
 
@@ -208,10 +286,18 @@ public class Main extends JFrame implements ColorModelListener
             }
         };
 
-        add(RGB);
-        add(CMY);
-        add(HSV);
-        add(LUV);
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+
+        panel1.add(RGB);
+        panel1.add(CMY);
+        panel1.setOpaque(false);
+        panel2.add(HSV);
+        panel2.add(LUV);
+        panel2.setOpaque(false);
+
+        add(panel1);
+        add(panel2);
         add(XYZ);
         colorChanged(new double[]{0, 0, 0}, null);
     }
@@ -236,6 +322,10 @@ public class Main extends JFrame implements ColorModelListener
 
     @Override
     public void colorChanged(double[] xyz, ColorModelPanel origin) {
+        if (origin != null) {
+            origin.disableIcons();
+        }
+
         RGB.notifyListener = false;
         CMY.notifyListener = false;
         HSV.notifyListener = false;
