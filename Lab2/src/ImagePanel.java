@@ -101,5 +101,4 @@ class ImagePanel extends JPanel
         return new double[]{L, u, v}; // max 1. 0.7 0.6
     }
 
-
 }

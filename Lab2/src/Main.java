@@ -13,8 +13,8 @@ public class Main extends JFrame
         setTitle("Lab2");
 
         ImagePanel imagePanel = new ImagePanel();
-        ColorModelPanel p1 = new ColorModelPanel(0, 255, new String[]{"R", "B", "B"});
-        ColorModelPanel p2 = new ColorModelPanel(0, 255, new String[]{"R", "B", "B"});
+        ColorModelPanel p1 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
+        ColorModelPanel p2 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
         DistancePanel p3 = new DistancePanel(0, 100);
         p3.setDistance(10);
 
