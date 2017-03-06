@@ -4,23 +4,23 @@ public class LUVConverter
 {
     // CIE RGB E xyz=(1/3,1/3,1/3) XYZ(100,100,100)
     private double[][] RGBtoXYZ = {
-            {0.4887180, 0.3106803, 0.2006017},
-            {0.1762044, 0.8129847, 0.0108109},
-            {0.0000000, 0.0102048, 0.9897952},
+            {0.4124564, 0.3575761, 0.1804375},
+            {0.2126729, 0.7151522, 0.0721750},
+            {0.0193339, 0.1191920, 0.9503041},
             };
 
     private double[][] XYZtoRGB = {
-            {2.3706743, -0.9000405, -0.4706338},
-            {-0.518850, 1.4253036, 0.0885814},
-            {0.0052982, -0.0146949, 1.0093968},
+            {3.2404542, -1.5371385, -0.4985314},
+            {-0.9692660, 1.8760108, 0.0415560},
+            {0.0556434, -0.2040259, 1.0572252},
             };
 
 
-    private double Xn = 1.;
-    private double Yn = 1.;
-    private double Zn = 1.;
-    private double un = 4 / 19.;
-    private double vn = 9 / 19.;
+    private double Xn = 95.047;
+    private double Yn = 100;
+    private double Zn = 108.883;
+    private double un = 4 * Xn / (Xn + 15 * Yn + 3 * Zn);
+    private double vn = 9 * Yn / (Xn + 15 * Yn + 3 * Zn);
     private double yEps = Math.pow(6. / 29, 3);
 
     private double[] matrixToVector(double[][] M, double[] v) {
@@ -42,6 +42,10 @@ public class LUVConverter
                 color.getBlue() / 255.
         };
         double[] XYZ = matrixToVector(RGBtoXYZ, RGB);
+        for (int i = 0; i < 3; i++) {
+            XYZ[i] *= 100;
+        }
+
         double L = XYZ[1] / Yn;
         if (L <= yEps) {
             L *= Math.pow(29 / 3., 3);
@@ -52,10 +56,12 @@ public class LUVConverter
         double u = 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
         double v = 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
 
-        if (Double.isNaN(u))
+        if (Double.isNaN(u)) {
             u = 0;
-        if (Double.isNaN(v))
+        }
+        if (Double.isNaN(v)) {
             v = 0;
+        }
 
         double U = 13 * L * (u - un);
         double V = 13 * L * (v - vn);
@@ -79,7 +85,7 @@ public class LUVConverter
 
         double X = (Y * 9 * u) / (4 * v);
         double Z = Y * (12 - 3 * u - 20 * v) / (4 * v);
-        double[] xyz = new double[]{X, Y, Z};
+        double[] xyz = new double[]{X / 100., Y / 100., Z / 100.};
         double[] rgb = matrixToVector(XYZtoRGB, xyz);
 //        System.out.printf("%f %f %f", rgb[0], rgb[1], rgb[2]);
         for (int i = 0; i < 3; i++) {

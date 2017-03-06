@@ -28,7 +28,7 @@ class ImagePanel extends JPanel
         setImage(ImageIO.read(file));
     }
 
-    private void setImage(BufferedImage image) {
+    void setImage(BufferedImage image) {
         AffineTransform affineTransform = new AffineTransform();
         affineTransform.scale(size.getWidth() / image.getWidth(), size.getHeight() / image.getHeight());
         AffineTransformOp op = new AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BILINEAR);

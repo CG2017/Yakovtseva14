@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -15,18 +18,18 @@ public class Main extends JFrame
         ImagePanel imagePanelConverted = new ImagePanel();
         ColorModelPanel p1 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
         ColorModelPanel p2 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
-        DistancePanel p3 = new DistancePanel(0, 100);
+        DistancePanel p3 = new DistancePanel(0, 300);
         p3.setDistance(10);
 
         imagePanelOriginal.addMouseListener(new MouseListener()
         {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (imagePanelConverted.getImage() == null) {
+                if (imagePanelOriginal.getImage() == null) {
                     return;
                 }
                 Point point = e.getPoint();
-                p1.setColor(new Color(imagePanelConverted.getImage().getRGB(point.x, point.y)));
+                p1.setColor(new Color(imagePanelOriginal.getImage().getRGB(point.x, point.y)));
             }
 
             @Override
@@ -40,20 +43,20 @@ public class Main extends JFrame
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (imagePanelConverted.getImage() == null) {
+                if (imagePanelOriginal.getImage() == null) {
                     return;
                 }
                 Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
-                imagePanelConverted.setCursor(cursor);
+                imagePanelOriginal.setCursor(cursor);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (imagePanelConverted.getImage() == null) {
+                if (imagePanelOriginal.getImage() == null) {
                     return;
                 }
                 Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-                imagePanelConverted.setCursor(cursor);
+                imagePanelOriginal.setCursor(cursor);
             }
         });
 
@@ -82,8 +85,10 @@ public class Main extends JFrame
         imgPanel.add(imagePanelConverted);
 
         JButton convertColorsButton = new JButton("Convert colors");
-        convertColorsButton.addActionListener(
-                e -> imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights()));
+        convertColorsButton.addActionListener(e -> {
+            imagePanelConverted.setImage(deepCopy(imagePanelOriginal.getImage()));
+            imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights());
+        });
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(chooseImgButton);
@@ -101,6 +106,13 @@ public class Main extends JFrame
         add(btnPanel);
         add(sliderPanel);
 
+    }
+
+    private BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     public static void main(String[] args) {
