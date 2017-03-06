@@ -9,24 +9,24 @@ public class Main extends JFrame
 {
     private Main() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setResizable(false);
         setTitle("Lab2");
 
-        ImagePanel imagePanel = new ImagePanel();
+        ImagePanel imagePanelOriginal = new ImagePanel();
+        ImagePanel imagePanelConverted = new ImagePanel();
         ColorModelPanel p1 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
         ColorModelPanel p2 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
         DistancePanel p3 = new DistancePanel(0, 100);
         p3.setDistance(10);
 
-        imagePanel.addMouseListener(new MouseListener()
+        imagePanelOriginal.addMouseListener(new MouseListener()
         {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (imagePanel.getImage() == null) {
+                if (imagePanelConverted.getImage() == null) {
                     return;
                 }
                 Point point = e.getPoint();
-                p1.setColor(new Color(imagePanel.getImage().getRGB(point.x, point.y)));
+                p1.setColor(new Color(imagePanelConverted.getImage().getRGB(point.x, point.y)));
             }
 
             @Override
@@ -40,20 +40,20 @@ public class Main extends JFrame
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                if (imagePanel.getImage() == null) {
+                if (imagePanelConverted.getImage() == null) {
                     return;
                 }
                 Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
-                imagePanel.setCursor(cursor);
+                imagePanelConverted.setCursor(cursor);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                if (imagePanel.getImage() == null) {
+                if (imagePanelConverted.getImage() == null) {
                     return;
                 }
                 Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
-                imagePanel.setCursor(cursor);
+                imagePanelConverted.setCursor(cursor);
             }
         });
 
@@ -65,7 +65,8 @@ public class Main extends JFrame
                                               if (returnVal == JFileChooser.APPROVE_OPTION) {
                                                   File file = fc.getSelectedFile();
                                                   try {
-                                                      imagePanel.setImage(file);
+                                                      imagePanelOriginal.setImage(file);
+                                                      imagePanelConverted.setImage(file);
                                                   } catch (IOException e1) {
                                                       e1.printStackTrace();
                                                   }
@@ -74,27 +75,31 @@ public class Main extends JFrame
 
         );
 
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.X_AXIS));
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        JPanel panel1 = new JPanel(new BorderLayout());
-        panel1.add(imagePanel, BorderLayout.NORTH);
-        panel1.add(chooseImgButton, BorderLayout.SOUTH);
-
-        JPanel panel2 = new JPanel();
-        panel2.setLayout(new BoxLayout(panel2, BoxLayout.Y_AXIS));
-        panel2.add(p1);
-        panel2.add(p3);
-        panel2.add(p2);
+        JPanel imgPanel = new JPanel();
+        imgPanel.add(imagePanelOriginal);
+        imgPanel.add(imagePanelConverted);
 
         JButton convertColorsButton = new JButton("Convert colors");
-        convertColorsButton.addActionListener(e -> {
-            imagePanel.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights());
-        });
-        panel2.add(convertColorsButton);
-        panel2.add(Box.createVerticalGlue());
+        convertColorsButton.addActionListener(
+                e -> imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights()));
 
-        add(panel1);
-        add(panel2);
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(chooseImgButton);
+        btnPanel.add(convertColorsButton);
+        btnPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.add(p1);
+        sliderPanel.add(p3);
+        sliderPanel.add(p2);
+
+
+        add(imgPanel);
+        add(btnPanel);
+        add(sliderPanel);
 
     }
 

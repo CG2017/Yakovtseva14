@@ -11,6 +11,8 @@ class ImagePanel extends JPanel
 {
     private BufferedImage image;
     private Dimension size = new Dimension(600, 400);
+    private LUVConverter converter = new LUVConverter();
+
 
     ImagePanel() {
         setPreferredSize(size);
@@ -34,7 +36,8 @@ class ImagePanel extends JPanel
         repaint();
     }
 
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (image != null) {
             g.drawImage(image, 0, 0, this);
         }
@@ -48,57 +51,27 @@ class ImagePanel extends JPanel
     }
 
     void convertImage(Color oldColor, Color newColor, int distance, double[] weights) {
+        double[] newLUV = converter.getLUV(newColor);
+        double[] oldLUV = converter.getLUV(oldColor);
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color currColor = new Color(image.getRGB(i, j));
-                int currDistance = calcDistance(getLUV(oldColor), getLUV(currColor), weights);
+                double[] currLUV = converter.getLUV(currColor);
+                int currDistance = calcDistance(oldLUV, currLUV, weights);
                 if (currDistance <= distance) {
-                    int distanceR = currColor.getRed() - oldColor.getRed();
-                    int distanceG = currColor.getGreen() - oldColor.getGreen();
-                    int distanceB = currColor.getBlue() - oldColor.getBlue();
-                    Color newColorWithDistance = new Color(Math.min(255, Math.max(0, newColor.getRed() + distanceR)),
-                                                           Math.min(255, Math.max(0, newColor.getGreen() + distanceG)),
-                                                           Math.min(255, Math.max(0, newColor.getBlue() + distanceB)));
-                    image.setRGB(i, j, newColorWithDistance.hashCode());
+                    double distanceL = currLUV[0] - oldLUV[0];
+                    double distanceU = currLUV[1] - oldLUV[1];
+                    double distanceV = currLUV[2] - oldLUV[2];
+                    image.setRGB(i, j, converter.getRGB(new double[]{
+                            newLUV[0] + distanceL,
+                            newLUV[1] + distanceU,
+                            newLUV[2] + distanceV
+                    }).hashCode());
                 }
             }
         }
 
         repaint();
-    }
-
-
-    // CIE RGB E xyz=(1/3,1/3,1/3) XYZ(100,100,100)
-    private double[][] RGBtoXYZ = {
-            {0.4887180, 0.3106803, 0.2006017},
-            {0.1762044, 0.8129847, 0.0108109},
-            {0.0000000, 0.0102048, 0.9897952},
-            };
-
-    private double[] matrixToVector(double[][] M, double[] v) {
-        double[] res = new double[v.length];
-        for (int i = 0; i < v.length; i++) {
-            double temp = 0;
-            for (int j = 0; j < v.length; j++) {
-                temp += M[i][j] * v[j];
-            }
-            res[i] = temp;
-        }
-        return res;
-    }
-
-    private double[] getLUV(Color color) {
-        double[] RGB = new double[]{
-                color.getRed() / 255.,
-                color.getGreen() / 255.,
-                color.getBlue() / 255.
-        };
-        double[] XYZ = matrixToVector(RGBtoXYZ, RGB);
-        double L = 100 * XYZ[1];
-        double u = 100 * 4 * XYZ[0] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
-        double v = 100 * 9 * XYZ[1] / (XYZ[0] + 15 * XYZ[1] + 3 * XYZ[2]);
-
-        return new double[]{L, u, v}; // max 1. 0.7 0.6
     }
 
 }
