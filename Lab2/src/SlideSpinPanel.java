@@ -1,7 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 
-public class SlideSpinPanel extends JPanel
+class SlideSpinPanel extends JPanel
 {
     private JSlider slider1;
     private JSlider slider2;

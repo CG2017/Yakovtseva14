@@ -20,6 +20,12 @@ public class Main extends JFrame
         ColorModelPanel p2 = new ColorModelPanel(0, 255, new String[]{"R", "G", "B"});
         DistancePanel p3 = new DistancePanel(0, 300);
         p3.setDistance(10);
+        p3.addCommonListener(e -> {
+            if (imagePanelOriginal.getImage() != null) {
+                imagePanelConverted.setImage(deepCopy(imagePanelOriginal.getImage()));
+                imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights());
+            }
+        });
 
         imagePanelOriginal.addMouseListener(new MouseListener()
         {
@@ -86,8 +92,10 @@ public class Main extends JFrame
 
         JButton convertColorsButton = new JButton("Convert colors");
         convertColorsButton.addActionListener(e -> {
-            imagePanelConverted.setImage(deepCopy(imagePanelOriginal.getImage()));
-            imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights());
+            if (imagePanelOriginal.getImage() != null) {
+                imagePanelConverted.setImage(deepCopy(imagePanelOriginal.getImage()));
+                imagePanelConverted.convertImage(p1.getColor(), p2.getColor(), p3.getDistance(), p3.getWeights());
+            }
         });
 
         JPanel btnPanel = new JPanel();

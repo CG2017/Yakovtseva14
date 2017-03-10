@@ -11,7 +11,7 @@ class ImagePanel extends JPanel
 {
     private BufferedImage image;
     private Dimension size = new Dimension(600, 400);
-    private LUVConverter converter = new LUVConverter();
+    private LABConverter converter = new LABConverter();
 
 
     ImagePanel() {
@@ -44,28 +44,28 @@ class ImagePanel extends JPanel
         g.dispose();
     }
 
-    private int calcDistance(double[] luv1, double[] luv2, double[] weights) {
-        return (int) Math.pow(weights[0] * (luv1[0] - luv2[0]) * (luv1[0] - luv2[0]) +
-                              weights[1] * (luv1[1] - luv2[1]) * (luv1[1] - luv2[1]) +
-                              weights[2] * (luv1[2] - luv2[2]) * (luv1[2] - luv2[2]), 0.5);
+    private int calcDistance(double[] lab1, double[] lab2, double[] weights) {
+        return (int) Math.pow(weights[0] * (lab1[0] - lab2[0]) * (lab1[0] - lab2[0]) +
+                              weights[1] * (lab1[1] - lab2[1]) * (lab1[1] - lab2[1]) +
+                              weights[2] * (lab1[2] - lab2[2]) * (lab1[2] - lab2[2]), 0.5);
     }
 
     void convertImage(Color oldColor, Color newColor, int distance, double[] weights) {
-        double[] newLUV = converter.getLUV(newColor);
-        double[] oldLUV = converter.getLUV(oldColor);
+        double[] newLAB = converter.getLAB(newColor);
+        double[] oldLAB = converter.getLAB(oldColor);
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 Color currColor = new Color(image.getRGB(i, j));
-                double[] currLUV = converter.getLUV(currColor);
-                int currDistance = calcDistance(oldLUV, currLUV, weights);
+                double[] currLAB = converter.getLAB(currColor);
+                int currDistance = calcDistance(oldLAB, currLAB, weights);
                 if (currDistance <= distance) {
-                    double distanceL = currLUV[0] - oldLUV[0];
-                    double distanceU = currLUV[1] - oldLUV[1];
-                    double distanceV = currLUV[2] - oldLUV[2];
+                    double distanceL = currLAB[0] - oldLAB[0];
+                    double distanceA = currLAB[1] - oldLAB[1];
+                    double distanceB = currLAB[2] - oldLAB[2];
                     image.setRGB(i, j, converter.getRGB(new double[]{
-                            newLUV[0] + distanceL,
-                            newLUV[1] + distanceU,
-                            newLUV[2] + distanceV
+                            newLAB[0] + distanceL,
+                            newLAB[1] + distanceA,
+                            newLAB[2] + distanceB
                     }).hashCode());
                 }
             }

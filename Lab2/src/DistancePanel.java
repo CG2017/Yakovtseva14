@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 
 class DistancePanel extends JPanel
 {
@@ -11,7 +12,7 @@ class DistancePanel extends JPanel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         spinner1 = new JSpinner(new SpinnerNumberModel(min, min, max, 1));
         slider1 = new JSlider(min, max, min);
-        weightPanel = new SlideSpinPanel(0, 100, new String[]{"L weight", "U weight", "V weight"});
+        weightPanel = new SlideSpinPanel(0, 100, new String[]{"L weight", "A weight", "B weight"});
         weightPanel.setValues(new int[]{100, 100, 100});
 
         JPanel foo = new JPanel();
@@ -43,6 +44,12 @@ class DistancePanel extends JPanel
     double[] getWeights() {
         int[] values = weightPanel.getValues();
         return new double[]{values[0] / 100., values[1] / 100., values[2] / 100.};
+    }
+
+    void addCommonListener(ChangeListener al) {
+        spinner1.addChangeListener(al);
+        slider1.addChangeListener(al);
+        weightPanel.addCommonListener(al);
     }
 }
 
