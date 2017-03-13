@@ -1,8 +1,16 @@
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.Axis;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,17 +30,14 @@ public class Main extends JFrame
         JButton chooseImgButton = new JButton("Choose picture");
         chooseImgButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        DefaultXYDataset dataRed = new DefaultXYDataset();
-        DefaultXYDataset dataGreen = new DefaultXYDataset();
-        DefaultXYDataset dataBlue = new DefaultXYDataset();
+        DefaultXYDataset data = new DefaultXYDataset();
 
-        JFreeChart chartRed = ChartFactory.createXYLineChart("Red Channel", "value", "pixels", dataRed,
-                                                             PlotOrientation.VERTICAL, true, true, false);
-        JFreeChart chartGreen = ChartFactory.createXYLineChart("Green Channel", "value", "pixels", dataGreen,
-                                                               PlotOrientation.VERTICAL, true, true, false);
-        JFreeChart chartBlue = ChartFactory.createXYLineChart("Blue Channel", "value", "pixels", dataBlue,
-                                                              PlotOrientation.VERTICAL, true, true, false);
-
+        ValueAxis xAxis = new NumberAxis("Color value");
+        xAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        xAxis.setRange(0, 255);
+        ValueAxis yAxis = new NumberAxis("Number of pixels");
+        XYPlot plot = new XYPlot(data, xAxis, yAxis, new XYLineAndShapeRenderer(true, false));
+        JFreeChart chart = new JFreeChart("Color histogram", JFreeChart.DEFAULT_TITLE_FONT, plot, false);
 
         JLabel redAvg = new JLabel();
         JLabel greenAvg = new JLabel();
@@ -42,18 +47,18 @@ public class Main extends JFrame
                                               JFileChooser fc = new JFileChooser("./res");
                                               int returnVal = fc.showOpenDialog(Main.this);
                                               if (returnVal == JFileChooser.APPROVE_OPTION) {
-                                                  while (dataRed.getSeriesCount() != 0 ) {
-                                                      dataRed.removeSeries(dataRed.getSeriesKey(0));
-                                                      dataGreen.removeSeries(dataGreen.getSeriesKey(0));
-                                                      dataBlue.removeSeries(dataBlue.getSeriesKey(0));
+                                                  while (data.getSeriesCount() != 0) {
+                                                      data.removeSeries(data.getSeriesKey(0));
+                                                      data.removeSeries(data.getSeriesKey(0));
+                                                      data.removeSeries(data.getSeriesKey(0));
                                                   }
                                                   File file = fc.getSelectedFile();
                                                   try {
                                                       imagePanelOriginal.setImage(file);
                                                       HistogramBuilder histogramBuilder = new HistogramBuilder(imagePanelOriginal.getImage());
-                                                      dataRed.addSeries(file.getName(), histogramBuilder.getRed());
-                                                      dataGreen.addSeries(file.getName(), histogramBuilder.getGreen());
-                                                      dataBlue.addSeries(file.getName(), histogramBuilder.getBlue());
+                                                      data.addSeries("red", histogramBuilder.getRed());
+                                                      data.addSeries("blue", histogramBuilder.getBlue());
+                                                      data.addSeries("green", histogramBuilder.getGreen());
 
                                                       redAvg.setText(Double.toString(histogramBuilder.getAvgRed()));
                                                       greenAvg.setText(Double.toString(histogramBuilder.getAvgGreen()));
@@ -95,15 +100,11 @@ public class Main extends JFrame
         imgPanel.add(avgPanel);
 
 
-        ChartPanel chartPanelRed = new ChartPanel(chartRed);
-        ChartPanel chartPanelGreen = new ChartPanel(chartGreen);
-        ChartPanel chartPanelBlue = new ChartPanel(chartBlue);
+        ChartPanel chartPanelRed = new ChartPanel(chart);
 
         JPanel chartPanel = new JPanel();
         chartPanel.setLayout(new BoxLayout(chartPanel, BoxLayout.Y_AXIS));
         chartPanel.add(chartPanelRed);
-        chartPanel.add(chartPanelGreen);
-        chartPanel.add(chartPanelBlue);
 
         add(imgPanel);
         add(chartPanel);
