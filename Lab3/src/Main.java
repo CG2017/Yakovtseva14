@@ -1,16 +1,10 @@
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.Axis;
-import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,9 +50,9 @@ public class Main extends JFrame
                                                   try {
                                                       imagePanelOriginal.setImage(file);
                                                       HistogramBuilder histogramBuilder = new HistogramBuilder(imagePanelOriginal.getImage());
+                                                      data.addSeries("green", histogramBuilder.getGreen());
                                                       data.addSeries("red", histogramBuilder.getRed());
                                                       data.addSeries("blue", histogramBuilder.getBlue());
-                                                      data.addSeries("green", histogramBuilder.getGreen());
 
                                                       redAvg.setText(Double.toString(histogramBuilder.getAvgRed()));
                                                       greenAvg.setText(Double.toString(histogramBuilder.getAvgGreen()));

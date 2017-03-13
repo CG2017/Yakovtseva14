@@ -27,6 +27,47 @@ public class Main extends JFrame
             }
         });
 
+
+        imagePanelConverted.addMouseListener(new MouseListener()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (imagePanelConverted.getImage() == null) {
+                    return;
+                }
+                Point point = e.getPoint();
+                p2.setColor(new Color(imagePanelConverted.getImage().getRGB(point.x, point.y)));
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (imagePanelConverted.getImage() == null) {
+                    return;
+                }
+                Cursor cursor = new Cursor(Cursor.HAND_CURSOR);
+                imagePanelConverted.setCursor(cursor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (imagePanelOriginal.getImage() == null) {
+                    return;
+                }
+                Cursor cursor = new Cursor(Cursor.DEFAULT_CURSOR);
+                imagePanelConverted.setCursor(cursor);
+            }
+        });
+
+
         imagePanelOriginal.addMouseListener(new MouseListener()
         {
             @Override
